@@ -46,7 +46,7 @@ TASKKILL /F /T /IM  "OriginWebHelperService.exe" >nul 2>&1
 TASKKILL /F /T /IM  "SteamService.exe" >nul 2>&1
 TASKKILL /F /T /IM  "steam.exe" >nul 2>&1
 TASKKILL /F /T /IM  "steamwebhelper.exe" >nul 2>&1
-TASKKILL /F /T /IM  "steamwebhelper.exe  /F
+TASKKILL /F /T /IM  "steamwebhelper.exe"  /F
 
 TASKKILL /F /T /IM  "YourPhone.exe" >nul 2>&1
 TASKKILL /F /T /IM  "DbxSvc.exe" >nul 2>&1
