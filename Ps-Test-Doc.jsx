@@ -39,7 +39,7 @@ doc.selection.clear();
 for (var y = 0; y < numSquaresY; y++) {
     for (var x = 0; x < numSquaresX; x++) {
         if ((x + y) % 2 == 0) {
-            setColor(120, 50, 50); // Red
+            setColor(255, 0, 0); // Red
         } else {
             setColor(0, 0, 0); // Black
         }
@@ -54,6 +54,13 @@ for (var y = 0; y < numSquaresY; y++) {
         doc.selection.deselect();
     }
 }
+
+// Apply Gaussian Blur
+var idGsnB = charIDToTypeID( "GsnB" );
+    var desc3 = new ActionDescriptor();
+    var idRds = charIDToTypeID( "Rds " );
+    desc3.putUnitDouble( idRds, charIDToTypeID( "#Pxl" ), 10.0 );
+executeAction( idGsnB, desc3, DialogModes.NO );
 
 // Display the document
 app.activeDocument = doc;
