@@ -10,6 +10,7 @@ TASKKILL /F /T /IM "CoreSync.exe" >nul 2>&1
 TASKKILL /F /T /IM "CreativeCloudSet-Up.exe" >nul 2>&1
 SLEEP 2 >nul 2>&1
 
+TASKKILL /F /T /IM "Adobe Crash Processor.exe" >nul 2>&1
 TASKKILL /F /T /IM "CCXProcess.exe" >nul 2>&1
 TASKKILL /F /T /IM "AdobeCollabSync.exe" >nul 2>&1
 TASKKILL /F /T /IM "Adobe CEF Helper.exe" >nul 2>&1
@@ -25,7 +26,8 @@ TASKKILL /F /T /IM "AdobeExtensionsService.exe" >nul 2>&1
 TASKKILL /F /T /IM  "AdobeARM.exe" >nul 2>&1
 TASKKILL /F /T /IM  "AdobeARMHelper.exe" >nul 2>&1
 TASKKILL /F /T /IM  "armsvc.exe" >nul 2>&1
-TASKKILL /F /T /IM  "cai-helper.exe" >nul 2>&1
+TASKKILL /F /T /IM  "AdobeCollabSync.exe" >nul 2>&1
+TASKKILL /F /T /IM  "CreativeCloudSet-Up.exe" >nul 2>&1
 
 NET STOP "AdobeUpdateService"
 NET STOP "AGSService"
