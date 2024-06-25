@@ -1,7 +1,11 @@
 #target photoshop
 
-// Create a new document
-var doc = app.documents.add(9, 12, 300, "Sample Comic Page Template", NewDocumentMode.RGB, DocumentFill.TRANSPARENT, 1.0, BitsPerChannelType.EIGHT);
+// Create a new document with dimensions in inches
+var widthInInches = 9;
+var heightInInches = 12;
+var resolution = 300; // DPI (dots per inch)
+
+var doc = app.documents.add(UnitValue(widthInInches, "in"), UnitValue(heightInInches, "in"), resolution, "Sample Comic Page Template", NewDocumentMode.RGB, DocumentFill.TRANSPARENT, 1.0, BitsPerChannelType.EIGHT);
 
 // Create a new layer for the background
 var backgroundLayer = doc.artLayers.add();
@@ -43,18 +47,17 @@ colorAdjustmentsFolder.name = "Color Adjustments";
 
 // Add new guide layout - first set
 var margins1 = 0.375; // 0.375 inch offset
-var resolution = doc.resolution; // Get the document resolution
 
 // Convert margins from inches to pixels
 var offset1 = margins1 * resolution;
 
 // Horizontal guides
 doc.guides.add(Direction.HORIZONTAL, UnitValue(offset1, "px"));
-doc.guides.add(Direction.HORIZONTAL, UnitValue((doc.height - margins1) * resolution, "px"));
+doc.guides.add(Direction.HORIZONTAL, UnitValue((doc.height.as('px') - offset1), "px"));
 
 // Vertical guides
 doc.guides.add(Direction.VERTICAL, UnitValue(offset1, "px"));
-doc.guides.add(Direction.VERTICAL, UnitValue((doc.width - margins1) * resolution, "px"));
+doc.guides.add(Direction.VERTICAL, UnitValue((doc.width.as('px') - offset1), "px"));
 
 // Add new guide layout - second set
 var margins2 = 0.125; // 0.125 inch offset
@@ -64,11 +67,11 @@ var offset2 = margins2 * resolution;
 
 // Horizontal guides
 doc.guides.add(Direction.HORIZONTAL, UnitValue(offset2, "px"));
-doc.guides.add(Direction.HORIZONTAL, UnitValue((doc.height - margins2) * resolution, "px"));
+doc.guides.add(Direction.HORIZONTAL, UnitValue((doc.height.as('px') - offset2), "px"));
 
 // Vertical guides
 doc.guides.add(Direction.VERTICAL, UnitValue(offset2, "px"));
-doc.guides.add(Direction.VERTICAL, UnitValue((doc.width - margins2) * resolution, "px"));
+doc.guides.add(Direction.VERTICAL, UnitValue((doc.width.as('px') - offset2), "px"));
 
 // Function to collapse all folders
 function collapseAllLayers(layerSet) {
