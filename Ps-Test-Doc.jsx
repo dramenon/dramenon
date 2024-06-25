@@ -1,14 +1,18 @@
 #target photoshop
 
-// Create a new document
+// Create a new document with dimensions in inches
+var widthInInches = 8;
+var heightInInches = 10;
+var resolution = 150; // DPI (dots per inch)
+
 var doc = app.documents.add(
-    8,     // Width in inches
-    10,    // Height in inches
-    150,   // Resolution in DPI
+    UnitValue(widthInInches, "in"), // Width in inches
+    UnitValue(heightInInches, "in"), // Height in inches
+    resolution, // Resolution in DPI
     '8-bit Test Document', // Document Name
-    NewDocumentMode.RGB,   // Document Mode: RGB
-    DocumentFill.WHITE,    // Background Color: White
-    1,     // Pixel Aspect Ratio
+    NewDocumentMode.RGB, // Document Mode: RGB
+    DocumentFill.WHITE, // Background Color: White
+    1, // Pixel Aspect Ratio
     BitsPerChannelType.EIGHT // 8 bits per channel
 );
 
@@ -18,11 +22,11 @@ checkerboardLayer.name = 'Checkerboard Pattern';
 
 // Define the checkerboard pattern size
 var squareSizeInches = 2; // Size of each square in inches
-var squareSizePixels = squareSizeInches * 150; // Convert square size to pixels (2 inches * 150 DPI)
+var squareSizePixels = squareSizeInches * resolution; // Convert square size to pixels (2 inches * 150 DPI)
 
 // Calculate the number of squares needed
-var numSquaresX = Math.ceil(doc.width * 150 / squareSizePixels);
-var numSquaresY = Math.ceil(doc.height * 150 / squareSizePixels);
+var numSquaresX = Math.ceil(doc.width.as('px') / squareSizePixels);
+var numSquaresY = Math.ceil(doc.height.as('px') / squareSizePixels);
 
 // Function to set the foreground color
 function setColor(r, g, b) {
@@ -39,7 +43,7 @@ doc.selection.clear();
 for (var y = 0; y < numSquaresY; y++) {
     for (var x = 0; x < numSquaresX; x++) {
         if ((x + y) % 2 == 0) {
-            setColor(255, 0, 0); // Red
+            setColor(120, 50, 50); // Red
         } else {
             setColor(0, 0, 0); // Black
         }
@@ -54,13 +58,6 @@ for (var y = 0; y < numSquaresY; y++) {
         doc.selection.deselect();
     }
 }
-
-// Apply Gaussian Blur
-var idGsnB = charIDToTypeID( "GsnB" );
-    var desc3 = new ActionDescriptor();
-    var idRds = charIDToTypeID( "Rds " );
-    desc3.putUnitDouble( idRds, charIDToTypeID( "#Pxl" ), 10.0 );
-executeAction( idGsnB, desc3, DialogModes.NO );
 
 // Display the document
 app.activeDocument = doc;
