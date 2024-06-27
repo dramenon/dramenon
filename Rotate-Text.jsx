@@ -1,14 +1,18 @@
 #target photoshop
 
-// Create a new document
+// Create a new document with dimensions in inches
+var widthInInches = 8;
+var heightInInches = 10;
+var resolution = 150; // DPI (dots per inch)
+
 var doc = app.documents.add(
-    8,     // Width in inches
-    10,    // Height in inches
-    150,   // Resolution in DPI
+    UnitValue(widthInInches, "in"), // Width in inches
+    UnitValue(heightInInches, "in"), // Height in inches
+    resolution, // Resolution in DPI
     '8-bit Test Document', // Document Name
-    NewDocumentMode.RGB,   // Document Mode: RGB
-    DocumentFill.WHITE,    // Background Color: White
-    1,     // Pixel Aspect Ratio
+    NewDocumentMode.RGB, // Document Mode: RGB
+    DocumentFill.WHITE, // Background Color: White
+    1, // Pixel Aspect Ratio
     BitsPerChannelType.EIGHT // 8 bits per channel
 );
 
