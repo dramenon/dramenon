@@ -14,8 +14,11 @@ function createNewDocument() {
         NewDocumentMode.RGB,
         DocumentFill.WHITE, // Use white background for "Background" layer
         1.0,
-        BitsPerChannelType.EIGHT
+        BitsPerChannelType.SIXTEEN // Set bit depth to 16 bits per channel
     );
+    
+    doc.colorProfileName = "Adobe RGB (1998)"; // Set the color profile to Adobe RGB (1998)
+    
     return doc;
 }
 
@@ -43,6 +46,15 @@ function setForegroundColorToBlack() {
     color.rgb.red = 0;
     color.rgb.green = 0;
     color.rgb.blue = 0;
+    app.foregroundColor = color;
+}
+
+// Function to set the text color
+function setTextColorToRGB() {
+    var color = new SolidColor();
+    color.rgb.red = 40;
+    color.rgb.green = 60;
+    color.rgb.blue = 200;
     app.foregroundColor = color;
 }
 
@@ -142,6 +154,26 @@ function addTextLayerWithTime(timeTaken) {
     textLayer.textItem.color = app.foregroundColor;
 }
 
+// Function to add system info and text
+function addSystemInfoText() {
+    var photoshopVersion = app.version;
+
+    // Text color
+    var textColor = new SolidColor();
+    textColor.rgb.red = 44;
+    textColor.rgb.green = 0;
+    textColor.rgb.blue = 84;
+
+    // Create a new text layer with the version number
+    var doc = app.activeDocument;
+    var textLayer = doc.artLayers.add();
+    textLayer.kind = LayerKind.TEXT;
+    textLayer.textItem.contents = "Hello, Your Photoshop Version is: " + photoshopVersion;
+    textLayer.textItem.size = 24;
+    textLayer.textItem.color = textColor;
+    textLayer.textItem.position = [UnitValue(1.75, "in"), UnitValue(1.75, "in")];
+}
+
 // Main function to run the performance test
 function runPerformanceTest() {
     var startTime = new Date().getTime();
@@ -156,6 +188,7 @@ function runPerformanceTest() {
     createMultiplyLayer();
 
     // Add and scale text
+    setTextColorToRGB(); // Set the text color
     var textLayer = addTextLayer();
     scaleTextLayer(textLayer, 500); // Scale text layer to 500%
 
@@ -164,6 +197,9 @@ function runPerformanceTest() {
 
     // Stroke path with new layer
     strokePathWithNewLayer();
+    
+    // Add system info text
+    addSystemInfoText();
 
     var endTime = new Date().getTime();
     var timeTaken = endTime - startTime;
