@@ -138,7 +138,7 @@ function runPerformanceTest() {
     // Add text layer with the time taken
     addTextLayer(timeTaken);
 
-    alert("Time taken for the performance test: " + timeTaken + " ms");
+   // alert("Time taken for the performance test: " + timeTaken + " ms");
 
     // Clean up
     // docRef.close(SaveOptions.DONOTSAVECHANGES); // Uncomment this line if you want to close the document automatically
