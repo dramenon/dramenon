@@ -73,36 +73,66 @@ function setBrushProperties(size, hardness, opacity, flow) {
     executeAction(app.charIDToTypeID("setd"), desc, DialogModes.NO);
 }
 
-// Function to create and stroke a path
-function createAndStrokePath(startX, startY, endX, endY) {
-    var lineArray = [];
-    var startPoint = new PathPointInfo();
-    startPoint.kind = PointKind.CORNERPOINT;
-    startPoint.anchor = [startX, startY];
-    startPoint.leftDirection = startPoint.anchor;
-    startPoint.rightDirection = startPoint.anchor;
+// Function to add text layer
+function addTextLayer() {
+    var doc = app.activeDocument;
+    var textLayer = doc.artLayers.add();
+    textLayer.kind = LayerKind.TEXT;
+    textLayer.textItem.contents = "Photoshop";
+    textLayer.textItem.position = [doc.width / 2, doc.height / 2]; // Position the text in the center
+    textLayer.textItem.size = 110; // Set initial text size
+    textLayer.textItem.justification = Justification.CENTER; // Center the text
+    textLayer.textItem.color = app.foregroundColor;
+    return textLayer;
+}
 
-    var endPoint = new PathPointInfo();
-    endPoint.kind = PointKind.CORNERPOINT;
-    endPoint.anchor = [endX, endY];
-    endPoint.leftDirection = endPoint.anchor;
-    endPoint.rightDirection = endPoint.anchor;
+// Function to scale text layer by 500%
+function scaleTextLayer(layer, scale) {
+    var idTrnf = charIDToTypeID("Trnf");
+    var desc11 = new ActionDescriptor();
+    var idnull = charIDToTypeID("null");
+    var ref5 = new ActionReference();
+    ref5.putEnumerated(charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
+    desc11.putReference(idnull, ref5);
+    desc11.putUnitDouble(charIDToTypeID("Scl "), charIDToTypeID("#Prc"), scale);
+    executeAction(idTrnf, desc11, DialogModes.NO);
+}
 
-    lineArray.push(startPoint);
-    lineArray.push(endPoint);
+// Function to convert text layer to path
+function convertTextToPath() {
+    var idMk = charIDToTypeID("Mk  ");
+    var desc7 = new ActionDescriptor();
+    var idnull = charIDToTypeID("null");
+    var ref3 = new ActionReference();
+    var idPath = charIDToTypeID("Path");
+    ref3.putClass(idPath);
+    desc7.putReference(idnull, ref3);
+    var idFrom = charIDToTypeID("From");
+    var ref4 = new ActionReference();
+    var idTxLr = charIDToTypeID("TxLr");
+    ref4.putEnumerated(idTxLr, charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
+    desc7.putReference(idFrom, ref4);
+    executeAction(idMk, desc7, DialogModes.NO);
+}
 
-    var subPathInfo = new SubPathInfo();
-    subPathInfo.closed = false;
-    subPathInfo.operation = ShapeOperation.SHAPEXOR;
-    subPathInfo.entireSubPath = lineArray;
+// Function to stroke the path
+function strokePathWithNewLayer() {
+    var doc = app.activeDocument;
+    var layer = doc.artLayers.add();
+    layer.name = "Stroke Layer";
 
-    var pathItem = app.activeDocument.pathItems.add("LinePath", [subPathInfo]);
+    // Select the specific brush "KYLE Ultimate Pencil Hard" and set size to 35
+    selectBrushByName("KYLE Ultimate Pencil Hard");
+    setBrushProperties(35, 100, 100, 100);
+
+    // Stroke the path with the brush
+    var pathItem = doc.pathItems.getByName("Work Path");
     pathItem.strokePath(ToolType.BRUSH);
     pathItem.remove();
 }
 
 // Function to add text layer with the time taken
-function addTextLayer(timeTaken) {
+function addTextLayerWithTime(timeTaken) {
     var doc = app.activeDocument;
     var textLayer = doc.artLayers.add();
     textLayer.kind = LayerKind.TEXT;
@@ -125,20 +155,23 @@ function runPerformanceTest() {
     // Create a new blank layer with Multiply blend mode
     createMultiplyLayer();
 
-    // Document dimensions in pixels
-    var width = 9 * 300;
-    var height = 12 * 300;
+    // Add and scale text
+    var textLayer = addTextLayer();
+    scaleTextLayer(textLayer, 500); // Scale text layer to 500%
 
-    // Create and stroke the diagonal line from top-left to bottom-right
-    createAndStrokePath(0, 0, width, height); // Top-left to bottom-right
+    // Convert text to path
+    convertTextToPath();
+
+    // Stroke path with new layer
+    strokePathWithNewLayer();
 
     var endTime = new Date().getTime();
     var timeTaken = endTime - startTime;
 
     // Add text layer with the time taken
-    addTextLayer(timeTaken);
+    addTextLayerWithTime(timeTaken);
 
-   // alert("Time taken for the performance test: " + timeTaken + " ms");
+    // alert("Time taken for the performance test: " + timeTaken + " ms"); // Commented out
 
     // Clean up
     // docRef.close(SaveOptions.DONOTSAVECHANGES); // Uncomment this line if you want to close the document automatically
