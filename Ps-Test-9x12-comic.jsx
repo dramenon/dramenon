@@ -1,11 +1,20 @@
 #target photoshop
 
 // Create a new document with dimensions in inches
-var widthInInches = 9;
-var heightInInches = 12;
-var resolution = 300; // DPI (dots per inch)
+var widthInInches = 8;
+var heightInInches = 10;
+var resolution = 150; // DPI (dots per inch)
 
-var doc = app.documents.add(UnitValue(widthInInches, "in"), UnitValue(heightInInches, "in"), resolution, "Sample Comic Page Template", NewDocumentMode.RGB, DocumentFill.TRANSPARENT, 1.0, BitsPerChannelType.EIGHT);
+var doc = app.documents.add(
+    UnitValue(widthInInches, "in"), // Width in inches
+    UnitValue(heightInInches, "in"), // Height in inches
+    resolution, // Resolution in DPI
+    '8-bit Test Document', // Document Name
+    NewDocumentMode.RGB, // Document Mode: RGB
+    DocumentFill.WHITE, // Background Color: White
+    1, // Pixel Aspect Ratio
+    BitsPerChannelType.EIGHT // 8 bits per channel
+);
 
 // Create a new layer for the background
 var backgroundLayer = doc.artLayers.add();
