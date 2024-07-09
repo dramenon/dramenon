@@ -1,8 +1,8 @@
 #target photoshop
 
 // Create a new document with dimensions in inches
-var widthInInches = 8;
-var heightInInches = 10;
+var widthInInches = 9;
+var heightInInches = 12;
 var resolution = 150; // DPI (dots per inch)
 
 var doc = app.documents.add(
