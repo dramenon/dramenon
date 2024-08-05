@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photoshop Performance Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .segment {
+            width: 20%;
+            height: 20px;
+        }
+        .segment-green {
+            background-color: #00ff00;
+        }
+        .segment-yellow-green {
+            background-color: #ccff00;
+        }
+        .segment-yellow {
+            background-color: #ffff00;
+        }
+        .segment-orange {
+            background-color: #ff9900;
+        }
+        .segment-red {
+            background-color: #ff0000;
+        }
+        .highlight {
+            border: 3px solid #000;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <!-- Welcome Section -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-4">Photoshop Performance Index</h1>
+            <p class="text-gray-700 mb-4">Every user's setup is unique and may require a different combination of techniques to get the most efficient performance from Photoshop. Answer a few questions and it will give a score providing possible expectations of performance when using Photoshop. Green faster, smoother operations and as one approaches Red slower performance.</p>
+        </div>
+
+        <form id="questionnaire-form">
+            <!-- Question 1 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">1. Does Document Dimension meet or exceed Pixel Width or Height:</label>
+                <div class="flex items-center mb-2">
+                    <input id="option1" type="radio" name="document_size" value="1" class="mr-2">
+                    <label for="option1" class="text-gray-700">1000</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="option2" type="radio" name="document_size" value="5" class="mr-2">
+                    <label for="option2" class="text-gray-700">5000</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="option3" type="radio" name="document_size" value="10" class="mr-2">
+                    <label for="option3" class="text-gray-700">10000</label>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">2. Document Resolution DPI/PPI:</label>
+                <div class="flex items-center mb-2">
+                    <input id="dpi1" type="radio" name="document_dpi" value="1" class="mr-2">
+                    <label for="dpi1" class="text-gray-700">72</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="dpi2" type="radio" name="document_dpi" value="5" class="mr-2">
+                    <label for="dpi2" class="text-gray-700">300</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="dpi3" type="radio" name="document_dpi" value="10" class="mr-2">
+                    <label for="dpi3" class="text-gray-700">600</label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">3. Bit Depth:</label>
+                <div class="flex items-center mb-2">
+                    <input id="bitdepth1" type="radio" name="bit_depth" value="1" class="mr-2">
+                    <label for="bitdepth1" class="text-gray-700">8</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="bitdepth2" type="radio" name="bit_depth" value="7" class="mr-2">
+                    <label for="bitdepth2" class="text-gray-700">16</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="bitdepth3" type="radio" name="bit_depth" value="10" class="mr-2">
+                    <label for="bitdepth3" class="text-gray-700">32</label>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">4. Hard Disk Space available on drive with Photoshop:</label>
+                <div class="flex items-center mb-2">
+                    <input id="diskspace1" type="radio" name="disk_space" value="1" class="mr-2">
+                    <label for="diskspace1" class="text-gray-700">Over 500MB</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="diskspace2" type="radio" name="disk_space" value="5" class="mr-2">
+                    <label for="diskspace2" class="text-gray-700">Under 500MB</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="diskspace3" type="radio" name="disk_space" value="9" class="mr-2">
+                    <label for="diskspace3" class="text-gray-700">Under 300MB</label>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">5. Does document contain Smart Object(s):</label>
+                <div class="flex items-center mb-2">
+                    <input id="smartobject1" type="radio" name="smart_object" value="1" class="mr-2">
+                    <label for="smartobject1" class="text-gray-700">Yes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="smartobject2" type="radio" name="smart_object" value="0" class="mr-2">
+                    <label for="smartobject2" class="text-gray-700">No</label>
+                </div>
+            </div>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+        </form>
+
+        <!-- Results Section -->
+        <div id="results" class="mt-8 hidden bg-green-100 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-2">Results</h2>
+            <p id="total-score" class="text-gray-700 mb-4"></p>
+            <div class="flex mb-4">
+                <div id="segment-1" class="segment segment-green"></div>
+                <div id="segment-2" class="segment segment-yellow-green"></div>
+                <div id="segment-3" class="segment segment-yellow"></div>
+                <div id="segment-4" class="segment segment-orange"></div>
+                <div id="segment-5" class="segment segment-red"></div>
+            </div>
+            <p class="text-gray-700">Faster performance in greens and slower performance at red.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('questionnaire-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const selectedValues = {
+                document_size: formData.get('document_size'),
+                document_dpi: formData.get('document_dpi'),
+                bit_depth: formData.get('bit_depth'),
+                disk_space: formData.get('disk_space'),
+                smart_object: formData.get('smart_object')
+            };
+
+            if (selectedValues.document_size && selectedValues.document_dpi && selectedValues.bit_depth && selectedValues.disk_space && selectedValues.smart_object) {
+                const totalPoints = 
+                    parseInt(selectedValues.document_size) +
+                    parseInt(selectedValues.document_dpi) +
+                    parseInt(selectedValues.bit_depth) +
+                    parseInt(selectedValues.disk_space) +
+                    parseInt(selectedValues.smart_object);
+
+                // Display the results
+                document.getElementById('total-score').textContent = 'Total Score: ' + totalPoints;
+                document.getElementById('results').classList.remove('hidden');
+
+                // Remove previous highlights
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`segment-${i}`).classList.remove('highlight');
+                }
+
+                // Determine the segment to highlight
+                if (totalPoints <= 8) {
+                    document.getElementById('segment-1').classList.add('highlight');
+                } else if (totalPoints <= 16) {
+                    document.getElementById('segment-2').classList.add('highlight');
+                } else if (totalPoints <= 24) {
+                    document.getElementById('segment-3').classList.add('highlight');
+                } else if (totalPoints <= 32) {
+                    document.getElementById('segment-4').classList.add('highlight');
+                } else {
+                    document.getElementById('segment-5').classList.add('highlight');
+                }
+            } else {
+                alert('Please answer all questions.');
+            }
+        });
+    </script>
+
+</body>
+</html>
