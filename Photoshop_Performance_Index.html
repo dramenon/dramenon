@@ -1,52 +1,26 @@
 #target photoshop
 
-/**
- * Extracts and classifies layers in the active Photoshop document.
- * @returns {Object} layerInfo - Information about the layers, including counts and names.
- */
+// Extract and classify layers in the active document
 function extractLayersByType() {
     var doc = app.activeDocument;
     var layers = doc.layers;
     var layerInfo = {
-        textLayers: [],
-        shapeLayers: [],
-        imageLayers: [],
-        smartObjectLayers: [],
-        patternLayers: [],
-        lutLayers: [],
-        otherLayers: [],
-        textLayerCount: 0,
-        shapeLayerCount: 0,
-        imageLayerCount: 0,
-        smartObjectLayerCount: 0,
-        patternLayerCount: 0,
-        lutLayerCount: 0,
-        otherLayerCount: 0,
-        totalLayers: 0,
-        totalFolders: 0
+        textLayers: [], shapeLayers: [], imageLayers: [],
+        smartObjectLayers: [], patternLayers: [], lutLayers: [], otherLayers: [],
+        textLayerCount: 0, shapeLayerCount: 0, imageLayerCount: 0,
+        smartObjectLayerCount: 0, patternLayerCount: 0, lutLayerCount: 0, otherLayerCount: 0,
+        totalLayers: 0, totalFolders: 0
     };
 
-    /**
-     * Retrieves information about a layer, such as its name and whether it has styles.
-     * @param {Object} layer - The layer to get information about.
-     * @returns {string} - Information about the layer.
-     */
+    // Get layer info
     function getLayerInfo(layer) {
         var info = layer.name;
-        if (layer.grouped) {
-            info += " (Clipped)";
-        }
-        if (hasLayerStyles(layer)) {
-            info += " (FX)";
-        }
+        if (layer.grouped) info += " (Clipped)";
+        if (hasLayerStyles(layer)) info += " (FX)";
         return info;
     }
 
-    /**
-     * Checks if a layer has styles applied.
-     * @param {Object} layer - The layer to check.
-     * @returns {boolean} - True if the layer has styles, false otherwise.
-     */
+    // Check if a layer has styles
     function hasLayerStyles(layer) {
         try {
             return layer.layerEffects.isValid;
@@ -55,10 +29,7 @@ function extractLayersByType() {
         }
     }
 
-    /**
-     * Recursively traverses layers and classifies them.
-     * @param {Object[]} layers - The layers to traverse.
-     */
+    // Traverse and classify layers
     function traverseLayers(layers) {
         for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
@@ -94,78 +65,22 @@ function extractLayersByType() {
     }
 
     traverseLayers(layers);
-
     return layerInfo;
 }
 
-/**
- * Retrieves information about the active Photoshop document.
- * @returns {Object} docInfo - Information about the document.
- */
+// Retrieve document information
 function getDocumentInfo() {
     var doc = app.activeDocument;
-    var colorMode;
-    switch (doc.mode) {
-        case DocumentMode.RGB:
-            colorMode = "RGB";
-            break;
-        case DocumentMode.CMYK:
-            colorMode = "CMYK";
-            break;
-        case DocumentMode.GRAYSCALE:
-            colorMode = "Grayscale";
-            break;
-        case DocumentMode.BITMAP:
-            colorMode = "Bitmap";
-            break;
-        case DocumentMode.INDEXEDCOLOR:
-            colorMode = "Indexed Color";
-            break;
-        case DocumentMode.LAB:
-            colorMode = "Lab Color";
-            break;
-        case DocumentMode.MULTICHANNEL:
-            colorMode = "Multichannel";
-            break;
-        default:
-            colorMode = "Unknown";
-    }
-
-    var bitDepth;
-    switch (doc.bitsPerChannel) {
-        case BitsPerChannelType.ONE:
-            bitDepth = 1;
-            break;
-        case BitsPerChannelType.EIGHT:
-            bitDepth = 8;
-            break;
-        case BitsPerChannelType.SIXTEEN:
-            bitDepth = 16;
-            break;
-        case BitsPerChannelType.THIRTYTWO:
-            bitDepth = 32;
-            break;
-        default:
-            bitDepth = "Unknown";
-    }
-
+    var colorMode = ["RGB", "CMYK", "Grayscale", "Bitmap", "Indexed Color", "Lab Color", "Multichannel"][doc.mode];
+    var bitDepth = ["1", "8", "16", "32"][doc.bitsPerChannel];
     var ppi = doc.resolution;
     var width = doc.width.as("px");
     var height = doc.height.as("px");
 
-    return {
-        colorMode: colorMode,
-        bitDepth: bitDepth,
-        ppi: ppi,
-        width: width,
-        height: height
-    };
+    return { colorMode: colorMode, bitDepth: bitDepth, ppi: ppi, width: width, height: height };
 }
 
-/**
- * Checks the active Photoshop document for potential performance issues.
- * @returns {string[]} performanceWarnings - A list of performance warnings.
- */
+// Check document for performance issues
 function checkPerformanceIssues() {
     var doc = app.activeDocument;
     var layerCount = doc.artLayers.length + doc.layerSets.length;
@@ -177,92 +92,42 @@ function checkPerformanceIssues() {
     var performanceWarnings = [];
 
     // Check for large document size
-    var docPixelCount = docWidth * docHeight;
-    if (docPixelCount > 20000000) { // Example threshold: 20 million pixels
-        performanceWarnings.push("Document size is very large (" + docHeight + " x " + docWidth + " pixels).");
-    }
-
+    if (docWidth * docHeight > 20000000) performanceWarnings.push("Large document size (" + docHeight + " x " + docWidth + " pixels).");
     // Check for high resolution
-    if (docResolution > 300) { // Example threshold: 300 DPI
-        performanceWarnings.push("Document resolution is very high (" + docResolution + " DPI).");
-    }
-
+    if (docResolution > 300) performanceWarnings.push("High resolution (" + docResolution + " DPI).");
     // Check for too many layers
-    if (layerCount > 100) { // Example threshold: 100 layers
-        performanceWarnings.push("Document has a high number of layers (" + layerCount + ").");
-    }
+    if (layerCount > 100) performanceWarnings.push("High number of layers (" + layerCount + ").");
 
     // Check for smart objects
     var smartObjectCount = 0;
     for (var i = 0; i < doc.artLayers.length; i++) {
-        if (doc.artLayers[i].kind == LayerKind.SMARTOBJECT) {
-            smartObjectCount++;
-        }
+        if (doc.artLayers[i].kind == LayerKind.SMARTOBJECT) smartObjectCount++;
     }
-    if (smartObjectCount > 10) { // Example threshold: 10 smart objects
-        performanceWarnings.push("Document has a high number of smart objects (" + smartObjectCount + ").");
-    }
+    if (smartObjectCount > 10) performanceWarnings.push("Many smart objects (" + smartObjectCount + ").");
 
     // Check for layer effects
     var layerEffectsCount = 0;
     for (var j = 0; j < doc.artLayers.length; j++) {
-        if (doc.artLayers[j].visible && hasLayerEffects(doc.artLayers[j])) {
-            layerEffectsCount++;
-        }
+        if (doc.artLayers[j].visible && hasLayerEffects(doc.artLayers[j])) layerEffectsCount++;
     }
-    if (layerEffectsCount > 5) { // Example threshold: 5 layers with effects
-        performanceWarnings.push("Document has a high number of layers with effects (" + layerEffectsCount + ").");
-    }
+    if (layerEffectsCount > 5) performanceWarnings.push("Many layers with effects (" + layerEffectsCount + ").");
 
     // Check for bit depth
-    var bitDepthString = "";
-    switch (docBitDepth) {
-        case BitsPerChannelType.ONE:
-            bitDepthString = "1-bit";
-            break;
-        case BitsPerChannelType.EIGHT:
-            bitDepthString = "8-bit";
-            break;
-        case BitsPerChannelType.SIXTEEN:
-            bitDepthString = "16-bit";
-            break;
-        case BitsPerChannelType.THIRTYTWO:
-            bitDepthString = "32-bit";
-            break;
-        default:
-            bitDepthString = "Unknown bit depth";
-    }
-
-    if (docBitDepth != BitsPerChannelType.EIGHT) { // Example check: anything other than 8-bit
-        performanceWarnings.push("Document bit depth is " + bitDepthString + ".");
-    }
+    if (docBitDepth != BitsPerChannelType.EIGHT) performanceWarnings.push("Bit depth is " + ["1-bit", "8-bit", "16-bit", "32-bit"][docBitDepth] + ".");
 
     return performanceWarnings;
 }
 
-/**
- * Checks if a layer has layer effects applied.
- * @param {Object} layer - The layer to check.
- * @returns {boolean} - True if the layer has effects, false otherwise.
- */
+// Check if a layer has effects
 function hasLayerEffects(layer) {
     try {
-        var layerDescriptor = layer.layerDescriptor;
-        if (layerDescriptor.hasKey(stringIDToTypeID('layerEffects'))) {
-            return true;
-        }
+        return layer.layerDescriptor.hasKey(stringIDToTypeID('layerEffects'));
     } catch (e) {
-        // Error handling in case the layer doesn't have the layerDescriptor property
+        return false;
     }
-    return false;
 }
 
-/**
- * Displays a dialog with layer information, document information, and performance warnings.
- * @param {Object} layerInfo - Information about the layers.
- * @param {Object} docInfo - Information about the document.
- * @param {string[]} performanceWarnings - A list of performance warnings.
- */
+// Display information dialog
 function showLayerInfoDialog(layerInfo, docInfo, performanceWarnings) {
     var dialog = new Window("dialog", "PreFlight Check");
 
@@ -270,56 +135,41 @@ function showLayerInfoDialog(layerInfo, docInfo, performanceWarnings) {
     docInfoGroup.add("statictext", undefined, "Color Mode: " + docInfo.colorMode);
     docInfoGroup.add("statictext", undefined, "Bit Depth: " + docInfo.bitDepth);
     docInfoGroup.add("statictext", undefined, "Resolution: " + docInfo.ppi + " ppi");
-    docInfoGroup.add("statictext", undefined, "Document Dimensions: " + docInfo.width + " x " + docInfo.height + " pixels");
+    docInfoGroup.add("statictext", undefined, "Dimensions: " + docInfo.width + " x " + docInfo.height + " pixels");
 
     var countGroup = dialog.add("panel", undefined, "Counts");
     countGroup.add("statictext", undefined, "Total Layers: " + layerInfo.totalLayers);
     countGroup.add("statictext", undefined, "Total Folders: " + layerInfo.totalFolders);
 
+    // Add performance warnings
     if (performanceWarnings.length > 0) {
         var performanceGroup = dialog.add("panel", undefined, "Performance Warnings");
-        var performanceList = performanceGroup.add("edittext", undefined, performanceWarnings.join("\n"), {multiline: true, readonly: true});
+        var performanceList = performanceGroup.add("edittext", undefined, performanceWarnings.join("\n"), { multiline: true, readonly: true });
         performanceList.size = [300, 50];
     }
 
-    var textLayerGroup = dialog.add("panel", undefined, "Text Layers (Count: " + layerInfo.textLayerCount + ")");
-    var textLayerList = textLayerGroup.add("edittext", undefined, layerInfo.textLayers.join("\n"), {multiline: true, readonly: true});
-    textLayerList.size = [300, 50];
+    // Add layer information groups
+    function addLayerGroup(title, layers, count) {
+        var group = dialog.add("panel", undefined, title + " (Count: " + count + ")");
+        var list = group.add("edittext", undefined, layers.join("\n"), { multiline: true, readonly: true });
+        list.size = [300, 50];
+    }
 
-    var imageLayerGroup = dialog.add("panel", undefined, "Image Layers (Count: " + layerInfo.imageLayerCount + ")");
-    var imageLayerList = imageLayerGroup.add("edittext", undefined, layerInfo.imageLayers.join("\n"), {multiline: true, readonly: true});
-    imageLayerList.size = [300, 50];
+    addLayerGroup("Text Layers", layerInfo.textLayers, layerInfo.textLayerCount);
+    addLayerGroup("Image Layers", layerInfo.imageLayers, layerInfo.imageLayerCount);
+    addLayerGroup("Shape Layers", layerInfo.shapeLayers, layerInfo.shapeLayerCount);
+    addLayerGroup("Smart Object Layers", layerInfo.smartObjectLayers, layerInfo.smartObjectLayerCount);
+    addLayerGroup("Pattern Layers", layerInfo.patternLayers, layerInfo.patternLayerCount);
+    addLayerGroup("LUT Layers", layerInfo.lutLayers, layerInfo.lutLayerCount);
+    addLayerGroup("Other Layers", layerInfo.otherLayers, layerInfo.otherLayerCount);
 
-    var shapeLayerGroup = dialog.add("panel", undefined, "Shape Layers (Count: " + layerInfo.shapeLayerCount + ")");
-    var shapeLayerList = shapeLayerGroup.add("edittext", undefined, layerInfo.shapeLayers.join("\n"), {multiline: true, readonly: true});
-    shapeLayerList.size = [300, 50];
-
-    var smartObjectLayerGroup = dialog.add("panel", undefined, "Smart Object Layers (Count: " + layerInfo.smartObjectLayerCount + ")");
-    var smartObjectLayerList = smartObjectLayerGroup.add("edittext", undefined, layerInfo.smartObjectLayers.join("\n"), {multiline: true, readonly: true});
-    smartObjectLayerList.size = [300, 50];
-
-    var patternLayerGroup = dialog.add("panel", undefined, "Pattern Layers (Count: " + layerInfo.patternLayerCount + ")");
-    var patternLayerList = patternLayerGroup.add("edittext", undefined, layerInfo.patternLayers.join("\n"), {multiline: true, readonly: true});
-    patternLayerList.size = [300, 50];
-
-    var lutLayerGroup = dialog.add("panel", undefined, "LUT Layers (Count: " + layerInfo.lutLayerCount + ")");
-    var lutLayerList = lutLayerGroup.add("edittext", undefined, layerInfo.lutLayers.join("\n"), {multiline: true, readonly: true});
-    lutLayerList.size = [300, 50];
-
-    var otherLayerGroup = dialog.add("panel", undefined, "Other Layers (Count: " + layerInfo.otherLayerCount + ")");
-    var otherLayerList = otherLayerGroup.add("edittext", undefined, layerInfo.otherLayers.join("\n"), {multiline: true, readonly: true});
-    otherLayerList.size = [300, 50];
-
-    var closeButton = dialog.add("button", undefined, "Close", {name: "close"});
-
-    closeButton.onClick = function() {
-        dialog.close();
-    };
+    var closeButton = dialog.add("button", undefined, "Close", { name: "close" });
+    closeButton.onClick = function() { dialog.close(); };
 
     dialog.show();
 }
 
-// Run the functions to gather information and display the dialog
+// Gather information and display dialog
 var layerInfo = extractLayersByType();
 var docInfo = getDocumentInfo();
 var performanceWarnings = checkPerformanceIssues();
