@@ -1,176 +1,209 @@
-#target photoshop
-
-// Extract and classify layers in the active document
-function extractLayersByType() {
-    var doc = app.activeDocument;
-    var layers = doc.layers;
-    var layerInfo = {
-        textLayers: [], shapeLayers: [], imageLayers: [],
-        smartObjectLayers: [], patternLayers: [], lutLayers: [], otherLayers: [],
-        textLayerCount: 0, shapeLayerCount: 0, imageLayerCount: 0,
-        smartObjectLayerCount: 0, patternLayerCount: 0, lutLayerCount: 0, otherLayerCount: 0,
-        totalLayers: 0, totalFolders: 0
-    };
-
-    // Get layer info
-    function getLayerInfo(layer) {
-        var info = layer.name;
-        if (layer.grouped) info += " (Clipped)";
-        if (hasLayerStyles(layer)) info += " (FX)";
-        return info;
-    }
-
-    // Check if a layer has styles
-    function hasLayerStyles(layer) {
-        try {
-            return layer.layerEffects.isValid;
-        } catch (e) {
-            return false;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photoshop Performance Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .segment {
+            width: 20%;
+            height: 20px;
         }
-    }
+        .segment-green {
+            background-color: #00ff00;
+        }
+        .segment-yellow-green {
+            background-color: #ccff00;
+        }
+        .segment-yellow {
+            background-color: #ffff00;
+        }
+        .segment-orange {
+            background-color: #ff9900;
+        }
+        .segment-red {
+            background-color: #ff0000;
+        }
+        .highlight {
+            border: 3px solid #000;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    // Traverse and classify layers
-    function traverseLayers(layers) {
-        for (var i = 0; i < layers.length; i++) {
-            var layer = layers[i];
-            layerInfo.totalLayers++;
-            if (layer.typename === "ArtLayer") {
-                if (layer.kind === LayerKind.TEXT) {
-                    layerInfo.textLayers.push(getLayerInfo(layer));
-                    layerInfo.textLayerCount++;
-                } else if (layer.kind === LayerKind.NORMAL) {
-                    layerInfo.imageLayers.push(getLayerInfo(layer));
-                    layerInfo.imageLayerCount++;
-                } else if (layer.kind === LayerKind.SOLIDFILL) {
-                    layerInfo.shapeLayers.push(getLayerInfo(layer));
-                    layerInfo.shapeLayerCount++;
-                } else if (layer.kind === LayerKind.SMARTOBJECT) {
-                    layerInfo.smartObjectLayers.push(getLayerInfo(layer) + " (Smart Object)");
-                    layerInfo.smartObjectLayerCount++;
-                } else if (layer.kind === LayerKind.PATTERNFILL) {
-                    layerInfo.patternLayers.push(getLayerInfo(layer) + " (Patterns)");
-                    layerInfo.patternLayerCount++;
-                } else if (layer.kind === LayerKind.COLORLOOKUP) {
-                    layerInfo.lutLayers.push(getLayerInfo(layer) + " (LUT)");
-                    layerInfo.lutLayerCount++;
-                } else {
-                    layerInfo.otherLayers.push(getLayerInfo(layer));
-                    layerInfo.otherLayerCount++;
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <!-- Welcome Section -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-4">Photoshop Performance Index</h1>
+            <p class="text-gray-700 mb-4">Every user's setup is unique and may require a different combination of techniques to get the most efficient performance from Photoshop. Answer a few questions and it will give a score providing possible expectations of performance when using Photoshop. Green faster, smoother operations and as one approaches Red slower performance.</p>
+        </div>
+
+        <form id="questionnaire-form">
+            <!-- Question 1 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">1. Does Document Dimension exceed Pixel Width or Height:</label>
+                <div class="flex items-center mb-2">
+                    <input id="option1" type="radio" name="document_size" value="1" class="mr-2">
+                    <label for="option1" class="text-gray-700">1000</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="option2" type="radio" name="document_size" value="5" class="mr-2">
+                    <label for="option2" class="text-gray-700">5000</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="option3" type="radio" name="document_size" value="15" class="mr-2">
+                    <label for="option3" class="text-gray-700">10000</label>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">2. Document Resolution DPI/PPI:</label>
+                <div class="flex items-center mb-2">
+                    <input id="dpi1" type="radio" name="document_dpi" value="1" class="mr-2">
+                    <label for="dpi1" class="text-gray-700">72</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="dpi2" type="radio" name="document_dpi" value="8" class="mr-2">
+                    <label for="dpi2" class="text-gray-700">300</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="dpi3" type="radio" name="document_dpi" value="15" class="mr-2">
+                    <label for="dpi3" class="text-gray-700">600</label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">3. Bit Depth:</label>
+                <div class="flex items-center mb-2">
+                    <input id="bitdepth1" type="radio" name="bit_depth" value="1" class="mr-2">
+                    <label for="bitdepth1" class="text-gray-700">8</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="bitdepth2" type="radio" name="bit_depth" value="8" class="mr-2">
+                    <label for="bitdepth2" class="text-gray-700">16</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="bitdepth3" type="radio" name="bit_depth" value="20" class="mr-2">
+                    <label for="bitdepth3" class="text-gray-700">32</label>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">4. Hard Disk Space available on drive with Photoshop:</label>
+                <div class="flex items-center mb-2">
+                    <input id="diskspace1" type="radio" name="disk_space" value="1" class="mr-2">
+                    <label for="diskspace1" class="text-gray-700">Over 500MB</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="diskspace2" type="radio" name="disk_space" value="5" class="mr-2">
+                    <label for="diskspace2" class="text-gray-700">Under 500MB</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="diskspace3" type="radio" name="disk_space" value="9" class="mr-2">
+                    <label for="diskspace3" class="text-gray-700">Under 300MB</label>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">5. Does document contain Smart Object(s):</label>
+                <div class="flex items-center mb-2">
+                    <input id="smartobject1" type="radio" name="smart_object" value="1" class="mr-2">
+                    <label for="smartobject1" class="text-gray-700">Yes</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="smartobject2" type="radio" name="smart_object" value="0" class="mr-2">
+                    <label for="smartobject2" class="text-gray-700">No</label>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">6. Does document contain more than number of Layers listed:</label>
+                <div class="flex items-center mb-2">
+                    <input id="layers1" type="radio" name="layers" value="1" class="mr-2">
+                    <label for="layers1" class="text-gray-700">25</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <input id="layers2" type="radio" name="layers" value="2" class="mr-2">
+                    <label for="layers2" class="text-gray-700">50</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="layers3" type="radio" name="layers" value="7" class="mr-2">
+                    <label for="layers3" class="text-gray-700">100</label>
+                </div>
+            </div>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+        </form>
+
+        <!-- Results Section -->
+        <div id="results" class="mt-8 hidden bg-green-100 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-2">Results</h2>
+            <p id="total-score" class="text-gray-700 mb-4"></p>
+            <div class="flex mb-4">
+                <div id="segment-1" class="segment segment-green"></div>
+                <div id="segment-2" class="segment segment-yellow-green"></div>
+                <div id="segment-3" class="segment segment-yellow"></div>
+                <div id="segment-4" class="segment segment-orange"></div>
+                <div id="segment-5" class="segment segment-red"></div>
+            </div>
+            <p class="text-gray-700">Faster performance in greens and slower performance at red.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('questionnaire-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const selectedValues = {
+                document_size: formData.get('document_size'),
+                document_dpi: formData.get('document_dpi'),
+                bit_depth: formData.get('bit_depth'),
+                disk_space: formData.get('disk_space'),
+                smart_object: formData.get('smart_object'),
+                layers: formData.get('layers')
+            };
+
+            if (selectedValues.document_size && selectedValues.document_dpi && selectedValues.bit_depth && selectedValues.disk_space && selectedValues.smart_object && selectedValues.layers) {
+                const totalPoints = 
+                    parseInt(selectedValues.document_size) +
+                    parseInt(selectedValues.document_dpi) +
+                    parseInt(selectedValues.bit_depth) +
+                    parseInt(selectedValues.disk_space) +
+                    parseInt(selectedValues.smart_object) +
+                    parseInt(selectedValues.layers);
+
+                // Display the results
+                document.getElementById('total-score').textContent = 'Total Score: ' + totalPoints;
+                document.getElementById('results').classList.remove('hidden');
+
+                // Remove previous highlights
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`segment-${i}`).classList.remove('highlight');
                 }
-            } else if (layer.typename === "LayerSet") {
-                layerInfo.totalFolders++;
-                traverseLayers(layer.layers);
+
+                // Determine the segment to highlight
+                if (totalPoints <= 8) {
+                    document.getElementById('segment-1').classList.add('highlight');
+                } else if (totalPoints <= 16) {
+                    document.getElementById('segment-2').classList.add('highlight');
+                } else if (totalPoints <= 24) {
+                    document.getElementById('segment-3').classList.add('highlight');
+                } else if (totalPoints <= 32) {
+                    document.getElementById('segment-4').classList.add('highlight');
+                } else {
+                    document.getElementById('segment-5').classList.add('highlight');
+                }
+            } else {
+                alert('Please answer all questions.');
             }
-        }
-    }
+        });
+    </script>
 
-    traverseLayers(layers);
-    return layerInfo;
-}
-
-// Retrieve document information
-function getDocumentInfo() {
-    var doc = app.activeDocument;
-    var colorMode = ["RGB", "CMYK", "Grayscale", "Bitmap", "Indexed Color", "Lab Color", "Multichannel"][doc.mode];
-    var bitDepth = ["1", "8", "16", "32"][doc.bitsPerChannel];
-    var ppi = doc.resolution;
-    var width = doc.width.as("px");
-    var height = doc.height.as("px");
-
-    return { colorMode: colorMode, bitDepth: bitDepth, ppi: ppi, width: width, height: height };
-}
-
-// Check document for performance issues
-function checkPerformanceIssues() {
-    var doc = app.activeDocument;
-    var layerCount = doc.artLayers.length + doc.layerSets.length;
-    var docWidth = doc.width.as('px');
-    var docHeight = doc.height.as('px');
-    var docResolution = doc.resolution;
-    var docBitDepth = doc.bitsPerChannel;
-
-    var performanceWarnings = [];
-
-    // Check for large document size
-    if (docWidth * docHeight > 20000000) performanceWarnings.push("Large document size (" + docHeight + " x " + docWidth + " pixels).");
-    // Check for high resolution
-    if (docResolution > 300) performanceWarnings.push("High resolution (" + docResolution + " DPI).");
-    // Check for too many layers
-    if (layerCount > 100) performanceWarnings.push("High number of layers (" + layerCount + ").");
-
-    // Check for smart objects
-    var smartObjectCount = 0;
-    for (var i = 0; i < doc.artLayers.length; i++) {
-        if (doc.artLayers[i].kind == LayerKind.SMARTOBJECT) smartObjectCount++;
-    }
-    if (smartObjectCount > 10) performanceWarnings.push("Many smart objects (" + smartObjectCount + ").");
-
-    // Check for layer effects
-    var layerEffectsCount = 0;
-    for (var j = 0; j < doc.artLayers.length; j++) {
-        if (doc.artLayers[j].visible && hasLayerEffects(doc.artLayers[j])) layerEffectsCount++;
-    }
-    if (layerEffectsCount > 5) performanceWarnings.push("Many layers with effects (" + layerEffectsCount + ").");
-
-    // Check for bit depth
-    if (docBitDepth != BitsPerChannelType.EIGHT) performanceWarnings.push("Bit depth is " + ["1-bit", "8-bit", "16-bit", "32-bit"][docBitDepth] + ".");
-
-    return performanceWarnings;
-}
-
-// Check if a layer has effects
-function hasLayerEffects(layer) {
-    try {
-        return layer.layerDescriptor.hasKey(stringIDToTypeID('layerEffects'));
-    } catch (e) {
-        return false;
-    }
-}
-
-// Display information dialog
-function showLayerInfoDialog(layerInfo, docInfo, performanceWarnings) {
-    var dialog = new Window("dialog", "PreFlight Check");
-
-    var docInfoGroup = dialog.add("panel", undefined, "Document Information");
-    docInfoGroup.add("statictext", undefined, "Color Mode: " + docInfo.colorMode);
-    docInfoGroup.add("statictext", undefined, "Bit Depth: " + docInfo.bitDepth);
-    docInfoGroup.add("statictext", undefined, "Resolution: " + docInfo.ppi + " ppi");
-    docInfoGroup.add("statictext", undefined, "Dimensions: " + docInfo.width + " x " + docInfo.height + " pixels");
-
-    var countGroup = dialog.add("panel", undefined, "Counts");
-    countGroup.add("statictext", undefined, "Total Layers: " + layerInfo.totalLayers);
-    countGroup.add("statictext", undefined, "Total Folders: " + layerInfo.totalFolders);
-
-    // Add performance warnings
-    if (performanceWarnings.length > 0) {
-        var performanceGroup = dialog.add("panel", undefined, "Performance Warnings");
-        var performanceList = performanceGroup.add("edittext", undefined, performanceWarnings.join("\n"), { multiline: true, readonly: true });
-        performanceList.size = [300, 50];
-    }
-
-    // Add layer information groups
-    function addLayerGroup(title, layers, count) {
-        var group = dialog.add("panel", undefined, title + " (Count: " + count + ")");
-        var list = group.add("edittext", undefined, layers.join("\n"), { multiline: true, readonly: true });
-        list.size = [300, 50];
-    }
-
-    addLayerGroup("Text Layers", layerInfo.textLayers, layerInfo.textLayerCount);
-    addLayerGroup("Image Layers", layerInfo.imageLayers, layerInfo.imageLayerCount);
-    addLayerGroup("Shape Layers", layerInfo.shapeLayers, layerInfo.shapeLayerCount);
-    addLayerGroup("Smart Object Layers", layerInfo.smartObjectLayers, layerInfo.smartObjectLayerCount);
-    addLayerGroup("Pattern Layers", layerInfo.patternLayers, layerInfo.patternLayerCount);
-    addLayerGroup("LUT Layers", layerInfo.lutLayers, layerInfo.lutLayerCount);
-    addLayerGroup("Other Layers", layerInfo.otherLayers, layerInfo.otherLayerCount);
-
-    var closeButton = dialog.add("button", undefined, "Close", { name: "close" });
-    closeButton.onClick = function() { dialog.close(); };
-
-    dialog.show();
-}
-
-// Gather information and display dialog
-var layerInfo = extractLayersByType();
-var docInfo = getDocumentInfo();
-var performanceWarnings = checkPerformanceIssues();
-showLayerInfoDialog(layerInfo, docInfo, performanceWarnings);
+</body>
+</html>
