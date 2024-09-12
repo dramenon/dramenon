@@ -20,11 +20,12 @@ function clearActionSet(actionSetName) {
     desc5.putReference(idnull, ref17);
     
     try {
-        // Execute the delete action
+        // Attempt to execute the delete action
         executeAction(iddelete, desc5, DialogModes.NO);
         $.writeln("Cleared action set: " + actionSetName);
     } catch (error) {
-        $.writeln("Failed to clear action set: " + actionSetName);
+        // If the action set is not found or can't be deleted, skip and go to the next
+        $.writeln("Failed to clear action set: " + actionSetName + " - Skipping to next.");
     }
 }
 
